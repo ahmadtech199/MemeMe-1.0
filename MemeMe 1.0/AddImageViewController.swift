@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  AddImageViewController.swift
 //  MemeMe 1.0
 //
 //  Created by Ahmad on 03/10/2019.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate , UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+class AddImageViewController: UIViewController, UITextFieldDelegate , UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var topNavBar: UINavigationBar!
@@ -53,18 +53,22 @@ class ViewController: UIViewController, UITextFieldDelegate , UIImagePickerContr
         unsubscribeFromKeyboardNotifications()
     }
     
-    @IBAction func pickAnImageFromAlbum(_ sender: Any) {
+    
+    
+    @IBAction func takeImage(_ sender: UIButton) {
+        
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
+        imagePicker.modalPresentationStyle = .fullScreen
+        if (sender.tag == 0){
+            imagePicker.sourceType = .camera
+        }
+        else {
+            imagePicker.sourceType = .photoLibrary
+        }
         present(imagePicker,animated: true,completion: nil)
     }
     
-    @IBAction func pickAnImage(_ sender: Any) {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .camera
-        present(imagePicker,animated: true,completion: nil)
-    }
     
     // MARK: - Text related
     func configureTextField(textField: UITextField) {
@@ -72,7 +76,7 @@ class ViewController: UIViewController, UITextFieldDelegate , UIImagePickerContr
             NSAttributedString.Key.strokeColor: UIColor.black,
             NSAttributedString.Key.foregroundColor: UIColor.white,
             NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-            NSAttributedString.Key.strokeWidth:  4.0
+            NSAttributedString.Key.strokeWidth:  -4.0
         ]
         
         topTextField.attributedPlaceholder = NSAttributedString(string: "TOP", attributes: memeTextAttributes)
@@ -111,8 +115,8 @@ class ViewController: UIViewController, UITextFieldDelegate , UIImagePickerContr
     
     func subscribeToKeyboardNotifications() {
         
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(AddImageViewController.keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(AddImageViewController.keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func unsubscribeFromKeyboardNotifications() {
@@ -144,9 +148,9 @@ class ViewController: UIViewController, UITextFieldDelegate , UIImagePickerContr
     @IBAction func cancel(_ sender: Any) {
         topTextField.text = "TOP"
         bottomTextField.text = "BOTTOM"
-        self.imagePickerView.image = nil
-        self.cancelButton.isEnabled = false
-        self.shareButton.isEnabled = false
+        imagePickerView.image = nil
+        cancelButton.isEnabled = false
+        shareButton.isEnabled = false
     }
     
     //MARK: - Meme related
@@ -154,7 +158,6 @@ class ViewController: UIViewController, UITextFieldDelegate , UIImagePickerContr
         //Hide Toolbar And Navigation Bar
         topNavBar.isHidden = true
         toolbar.isHidden = true
-        
         // Render View To An Image
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
@@ -164,9 +167,9 @@ class ViewController: UIViewController, UITextFieldDelegate , UIImagePickerContr
         //Show Toolbar and Navigation Bar
         topNavBar.isHidden = false
         toolbar.isHidden = false
-        
         return memedImage
     }
+    
     
     func save() {
         // Create The Meme
@@ -180,6 +183,7 @@ class ViewController: UIViewController, UITextFieldDelegate , UIImagePickerContr
         if let image = info[.originalImage] as? UIImage {
             // Set photoImageView to display the selected image.
             imagePickerView.image = image
+            imagePickerView.contentMode = .scaleAspectFit
         }
         // Dismiss the picker.
         dismiss(animated: true, completion: nil)
