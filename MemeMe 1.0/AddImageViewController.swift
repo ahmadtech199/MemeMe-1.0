@@ -156,8 +156,9 @@ class AddImageViewController: UIViewController, UITextFieldDelegate , UIImagePic
     //MARK: - Meme related
     func generateMemedImage() -> UIImage {
         //Hide Toolbar And Navigation Bar
-        topNavBar.isHidden = true
-        toolbar.isHidden = true
+        setNavBarVisibilty(true)
+        //        topNavBar.isHidden = true
+        //        toolbar.isHidden = true
         // Render View To An Image
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
@@ -165,11 +166,17 @@ class AddImageViewController: UIViewController, UITextFieldDelegate , UIImagePic
         UIGraphicsEndImageContext()
         
         //Show Toolbar and Navigation Bar
-        topNavBar.isHidden = false
-        toolbar.isHidden = false
+        setNavBarVisibilty(false)
+        //        topNavBar.isHidden = false
+        //        toolbar.isHidden = false
         return memedImage
     }
     
+    // shortCut method about navbar and toolBar
+    func setNavBarVisibilty(_ value:Bool) {
+        topNavBar.isHidden = !value
+        toolbar.isHidden = !value
+    }
     
     func save() {
         // Create The Meme
